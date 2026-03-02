@@ -120,7 +120,12 @@ public class AplicativoServiceIntegrationTest {
         assertEquals("tax_cancelamento inválida.", exception.getMessage());
     }
 
-    // Email deve ser válido
+    /**
+     * TESTE: Validar formato do email
+      ema_suporte deve conter @ e não ser apenas "email"
+      Email = "emailsinvalido" (sem @)
+      Rejeitar com InvalidDataException
+     */
     @Test
     public void testSalvarAplicativoComEmailInvalido() {
         aplicativoDTOValido.setEma_suporte("emailsinvalido");
@@ -133,7 +138,11 @@ public class AplicativoServiceIntegrationTest {
         assertEquals("ema_suporte inválido.", exception.getMessage());
     }
 
-    // Buscar aplicativo por ID
+    /**
+      TESTE: Buscar aplicativo por ID
+      Salvar aplicativo e depois buscar pelo ID retornado
+      Encontrar e retornar os dados corretos
+     */
     @Test
     public void testBuscarPorIdExistente() {
         AplicativoDTO salvo = aplicativoService.salvar(aplicativoDTOValido);
@@ -145,7 +154,10 @@ public class AplicativoServiceIntegrationTest {
         assertEquals("Uber", resultado.getNom_aplicativo());
     }
 
-    // Rejeitar busca de aplicativo inexistente
+    /**
+      TESTE: Buscar aplicativo com ID inexistente
+      Lançar ResourceNotFoundException
+     */
     @Test
     public void testBuscarPorIdNaoExistente() {
         ResourceNotFoundException exception = assertThrows(
@@ -156,7 +168,11 @@ public class AplicativoServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Aplicativo não encontrado"));
     }
 
-    // Listar todos os aplicativos cadastrados
+    /**
+      TESTE: Listar todos os aplicativos cadastrados
+      Salvar 2 aplicativos diferentes (Uber e 99)
+      Lista retorna exatamente 2 registros
+     */
     @Test
     public void testListarTodos() {
         aplicativoService.salvar(aplicativoDTOValido);
@@ -173,7 +189,11 @@ public class AplicativoServiceIntegrationTest {
         assertEquals(2, resultado.size());
     }
 
-    // Atualizar dados do aplicativo
+    /**
+      TESTE: Atualizar dados do aplicativo
+      Atualizar nome e tax_plataforma com novos valores válidos
+      Dados são alterados com sucesso
+     */
     @Test
     public void testAtualizarAplicativoValido() {
         AplicativoDTO salvo = aplicativoService.salvar(aplicativoDTOValido);
@@ -189,7 +209,11 @@ public class AplicativoServiceIntegrationTest {
         assertEquals(new BigDecimal("0.18"), resultado.getTax_plataforma());
     }
 
-    // Validar taxa ao atualizar
+    /**
+      TESTE: Validar tax ao atualizar
+      Tentar atualizar com tax_plataforma = -0.10
+      Rejeitar com InvalidDataException
+     */
     @Test
     public void testAtualizarAplicativoComTaxInvalida() {
         AplicativoDTO salvo = aplicativoService.salvar(aplicativoDTOValido);
@@ -205,7 +229,10 @@ public class AplicativoServiceIntegrationTest {
         assertEquals("tax_plataforma inválida.", exception.getMessage());
     }
 
-    // Rejeitar atualização de aplicativo inexistente
+    /**
+      TESTE: Atualizar aplicativo inexistente
+      Lançar ResourceNotFoundException
+     */
     @Test
     public void testAtualizarAplicativoInexistente() {
         AplicativoDTO atualizacao = new AplicativoDTO();
@@ -219,7 +246,11 @@ public class AplicativoServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Aplicativo não encontrado"));
     }
 
-    // Excluir aplicativo existente
+    /**
+      TESTE: Excluir aplicativo
+      Salvar aplicativo, depois excluir e tentar buscar novamente
+      Aplicativo não deve ser encontrado após exclusão
+     */
     @Test
     public void testExcluirAplicativoExistente() {
         AplicativoDTO salvo = aplicativoService.salvar(aplicativoDTOValido);
@@ -234,7 +265,10 @@ public class AplicativoServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Aplicativo não encontrado"));
     }
 
-    // Rejeitar exclusão de aplicativo inexistente
+    /**
+      TESTE: Tentar excluir aplicativo inexistente
+      Lançar ResourceNotFoundException
+     */
     @Test
     public void testExcluirAplicativoInexistente() {
         ResourceNotFoundException exception = assertThrows(
@@ -245,7 +279,11 @@ public class AplicativoServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Aplicativo não encontrado"));
     }
 
-    // Salvar aplicativo sem taxa de cancelamento (opcional)
+    /**
+      TESTE: Salvar aplicativo SEM tax_cancelamento
+      tax_cancelamento = null (campo opcional)
+      Aplicativo salvo normalmente com tax_cancelamento = null
+     */
     @Test
     public void testSalvarAplicativoSemTaxCancelamento() {
         aplicativoDTOValido.setTax_cancelamento(null);
@@ -256,7 +294,11 @@ public class AplicativoServiceIntegrationTest {
         assertNull(resultado.getTax_cancelamento());
     }
 
-    // Salvar aplicativo sem email de suporte (opcional)
+    /**
+      TESTE: Salvar aplicativo SEM email de suporte
+      ema_suporte = null (campo opcional)
+      Aplicativo salvo normalmente com ema_suporte = null
+     */
     @Test
     public void testSalvarAplicativoSemEmail() {
         aplicativoDTOValido.setEma_suporte(null);

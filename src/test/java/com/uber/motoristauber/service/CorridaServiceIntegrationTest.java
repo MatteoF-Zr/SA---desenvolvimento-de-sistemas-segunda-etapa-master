@@ -1,9 +1,9 @@
-package com.uber.motoristauber.service;
+package com.uber.motoristauber.service; 
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.List; 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest; 
 
 import com.uber.motoristauber.dto.AplicativoDTO;
 import com.uber.motoristauber.dto.CorridaDTO;
@@ -25,9 +25,11 @@ import com.uber.motoristauber.repository.MotoristaRepository;
 
 import jakarta.transaction.Transactional;
 
-// Testes integração Corrida
+// teste de integração Spring Boot
 @SpringBootTest
+// cada teste executa em transação para rollback automático
 @Transactional
+// classe de testes para a funcionalidade de corrida
 public class CorridaServiceIntegrationTest {
 
     @Autowired
@@ -43,14 +45,21 @@ public class CorridaServiceIntegrationTest {
     @Autowired
     private AplicativoRepository aplicativoRepository;
 
+    // objeto DTO válido para testes
     private CorridaDTO corridaDTOValida;
+    // armazenará o id do motorista de teste
     private Integer idMotoristaTeste;
+    // armazenará o id do aplicativo de teste
     private Integer idAplicativoTeste;
 
+    // prepara o ambiente antes de cada método de teste
     @BeforeEach
     public void setup() {
+        // limpa todas as corridas do repositório
         corridaRepository.deleteAll();
+        // limpa todos os motoristas cadastrados
         motoristaRepository.deleteAll();
+        // limpa todos os aplicativos cadastrados
         aplicativoRepository.deleteAll();
         
         MotoristaDTO motorista = new MotoristaDTO();
@@ -78,6 +87,7 @@ public class CorridaServiceIntegrationTest {
         corridaDTOValida.setId_aplicativo(idAplicativoTeste);
     }
 
+    // valida que uma corrida pode ser salva com dados corretos
     @Test
     public void testSalvarCorridaValida() {
         CorridaDTO resultado = corridaService.salvar(corridaDTOValida);
@@ -89,6 +99,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals("Rua B", resultado.getDes_corrida());
     }
 
+    // verifica falha ao salvar corrida com valor zero
     @Test
     public void testSalvarCorridaComValorZero() {
         corridaDTOValida.setVal_corrida(BigDecimal.ZERO);
@@ -101,6 +112,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals("val_corrida deve ser maior que zero", exception.getMessage());
     }
 
+    // verifica falha ao salvar corrida com valor negativo
     @Test
     public void testSalvarCorridaComValorNegativo() {
         corridaDTOValida.setVal_corrida(new BigDecimal("-10.00"));
@@ -113,6 +125,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals("val_corrida deve ser maior que zero", exception.getMessage());
     }
 
+    // verifica falha ao salvar corrida sem valor definido
     @Test
     public void testSalvarCorridaComValorNull() {
         corridaDTOValida.setVal_corrida(null);
@@ -125,6 +138,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals("val_corrida deve ser maior que zero", exception.getMessage());
     }
 
+    // teste salvamento com motorista inexistente deve lançar exceção
     @Test
     public void testSalvarCorridaComMotoristaInexistente() {
         corridaDTOValida.setId_motorista(999);
@@ -137,6 +151,7 @@ public class CorridaServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Motorista não encontrado"));
     }
 
+    // teste salvamento com aplicativo inexistente deve lançar exceção
     @Test
     public void testSalvarCorridaComAplicativoInexistente() {
         corridaDTOValida.setId_aplicativo(999);
@@ -149,6 +164,7 @@ public class CorridaServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Aplicativo não encontrado"));
     }
 
+    // buscar corrida por ID existente retorna dados corretos
     @Test
     public void testBuscarPorIdExistente() {
         CorridaDTO salva = corridaService.salvar(corridaDTOValida);
@@ -160,6 +176,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals("Rua A", resultado.getOrg_corrida());
     }
 
+    // buscar por ID inexistente deve lançar ResourceNotFound
     @Test
     public void testBuscarPorIdNaoExistente() {
         ResourceNotFoundException exception = assertThrows(
@@ -170,6 +187,7 @@ public class CorridaServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Corrida não encontrada"));
     }
 
+    // listar todas as corridas deve retornar lista completa
     @Test
     public void testListarTodos() {
         corridaService.salvar(corridaDTOValida);
@@ -189,6 +207,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals(2, resultado.size());
     }
 
+    // atualizar corrida com dados válidos deve alterar campos
     @Test
     public void testAtualizarCorridaValida() {
         CorridaDTO salva = corridaService.salvar(corridaDTOValida);
@@ -209,6 +228,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals(new BigDecimal("100.00"), resultado.getVal_corrida());
     }
 
+    // atualizar com valor inválido não deve quebrar o fluxo
     @Test
     public void testAtualizarCorridaComValorInvalido() {
         CorridaDTO salva = corridaService.salvar(corridaDTOValida);
@@ -227,6 +247,7 @@ public class CorridaServiceIntegrationTest {
         assertNotNull(resultado);
     }
 
+    // atualizar corrida inexistente deve lançar ResourceNotFound
     @Test
     public void testAtualizarCorridaInexistente() {
         CorridaDTO atualizacao = new CorridaDTO();
@@ -240,6 +261,7 @@ public class CorridaServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Corrida não encontrada"));
     }
 
+    // alterar motorista em corrida existente deve atualizar referência
     @Test
     public void testAtualizarMotoristaEmCorrida() {
         CorridaDTO salva = corridaService.salvar(corridaDTOValida);
@@ -265,6 +287,7 @@ public class CorridaServiceIntegrationTest {
         assertEquals(motoristaResult.getId_motorista(), resultado.getId_motorista());
     }
 
+    // excluir corrida existente e verificar remoção
     @Test
     public void testExcluirCorridaExistente() {
         CorridaDTO salva = corridaService.salvar(corridaDTOValida);
@@ -279,6 +302,7 @@ public class CorridaServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Corrida não encontrada"));
     }
 
+    // tentativa de excluir corrida inexistente lança exceção
     @Test
     public void testExcluirCorridaInexistente() {
         ResourceNotFoundException exception = assertThrows(
@@ -288,6 +312,7 @@ public class CorridaServiceIntegrationTest {
         assertTrue(exception.getMessage().contains("Corrida não encontrada"));
     }
 
+    // salvar corrida com valor muito grande é permitido
     @Test
     public void testCorridaComValorGrande() {
         corridaDTOValida.setVal_corrida(new BigDecimal("9999.99"));
